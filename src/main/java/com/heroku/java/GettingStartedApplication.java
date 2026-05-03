@@ -5,6 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,6 +47,53 @@ public class GettingStartedApplication {
 
             model.put("records", output);
             return "database";
+
+        } catch (Throwable t) {
+            model.put("message", t.getMessage());
+            return "error";
+        }
+    }
+
+    @GetMapping("/db")
+    String db(Map<String, Object> model) {
+        try (Connection connection = dataSource.getConnection()) {
+            final var stmt = connection.createStatement();
+            stmt.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS table_timestamp_and_random_string (tick timestamp, random_string varchar(30))");
+
+            final var resultSet = stmt.executeQuery("SELECT tick, random_string FROM table_timestamp_and_random_string");
+            final var output = new ArrayList<>();
+            while (resultSet.next()) {
+                output.add(resultSet.getTimestamp("tick") + " | " + resultSet.getString("random_string"));
+            }
+
+            model.put("records", output);
+            return "db";
+
+        } catch (Throwable t) {
+            model.put("message", t.getMessage());
+            return "error";
+        }
+    }
+
+    @GetMapping("/dbinput")
+    String dbinputForm() {
+        return "dbinput";
+    }
+
+    @PostMapping("/dbinput")
+    String dbinputSubmit(@RequestParam String userString, Map<String, Object> model) {
+        try (Connection connection = dataSource.getConnection()) {
+            final var stmt = connection.createStatement();
+            stmt.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS table_timestamp_and_random_string (tick timestamp, random_string varchar(30))");
+
+            final var pstmt = connection.prepareStatement(
+                    "INSERT INTO table_timestamp_and_random_string VALUES (now(), ?)");
+            pstmt.setString(1, userString);
+            pstmt.executeUpdate();
+
+            return "redirect:/db";
 
         } catch (Throwable t) {
             model.put("message", t.getMessage());

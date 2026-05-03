@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'dbinput')}">
+<body>
+
+<div class="container">
+    <h1>Add to Database</h1>
+    <form action="/dbinput" method="post">
+        <div class="form-group">
+            <label for="userString">Enter a string (max 30 characters):</label>
+            <input type="text" class="form-control" id="userString" name="userString" maxlength="30" required/>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="/db" class="btn btn-default">View Records</a>
+    </form>
+</div>
+
+</body>
+</html>
