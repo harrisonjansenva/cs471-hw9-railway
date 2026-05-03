@@ -41,6 +41,7 @@ public class GettingStartedApplication {
             while (resultSet.next()) {
                 output.add("Read from DB: " + resultSet.getTimestamp("tick") + " | " + resultSet.getString("random_string"));
             }
+            System.out.println("Harrison");
 
             model.put("records", output);
             return "database";
